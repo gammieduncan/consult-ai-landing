@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DispensaryAI Demo - Natural Language Dispensary Management</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .demo-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .chat-interface {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            margin: 2rem 0;
+        }
+        
+        .chat-header {
+            background: linear-gradient(45deg, #059669, #10b981);
+            color: white;
+            padding: 1.5rem;
+            text-align: center;
+        }
+        
+        .chat-messages {
+            height: 400px;
+            overflow-y: auto;
+            padding: 1rem;
+            background: #f8fafc;
+        }
+        
+        .message {
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+        }
+        
+        .message.user {
+            flex-direction: row-reverse;
+        }
+        
+        .message-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            color: white;
+        }
+        
+        .message.user .message-avatar {
+            background: linear-gradient(45deg, #059669, #10b981);
+        }
+        
+        .message.ai .message-avatar {
+            background: linear-gradient(45deg, #6366f1, #8b5cf6);
+        }
+        
+        .message-content {
+            background: white;
+            padding: 1rem;
+            border-radius: 15px;
+            max-width: 70%;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .message.user .message-content {
+            background: linear-gradient(45deg, #059669, #10b981);
+            color: white;
+        }
+        
+        .chat-input {
+            display: flex;
+            padding: 1rem;
+            background: white;
+            border-top: 1px solid #e5e7eb;
+        }
+        
+        .chat-input input {
+            flex: 1;
+            padding: 1rem;
+            border: 1px solid #e5e7eb;
+            border-radius: 25px;
+            font-size: 1rem;
+            outline: none;
+        }
+        
+        .chat-input input:focus {
+            border-color: #059669;
+            box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.1);
+        }
+        
+        .chat-input button {
+            margin-left: 1rem;
+            padding: 1rem 1.5rem;
+            background: linear-gradient(45deg, #059669, #10b981);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .chat-input button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(5, 150, 105, 0.3);
+        }
+        
+        .example-commands {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+        
+        .example-command {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 15px;
+            border: 1px solid rgba(5, 150, 105, 0.1);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .example-command:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            border-color: #059669;
+        }
+        
+        .example-command h4 {
+            color: #059669;
+            margin-bottom: 0.5rem;
+        }
+        
+        .example-command p {
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .system-status {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+        
+        .status-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 15px;
+            text-align: center;
+            border: 1px solid rgba(5, 150, 105, 0.1);
+        }
+        
+        .status-card.connected {
+            border-color: #10b981;
+        }
+        
+        .status-card.connected .status-icon {
+            color: #10b981;
+        }
+        
+        .status-icon {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            color: #6b7280;
+        }
+        
+        .status-card h4 {
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+        
+        .status-card p {
+            color: #666;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <i class="fas fa-network-wired"></i>
+                <span>DispensaryAI</span>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="index.html#services">Solutions</a></li>
+                <li><a href="index.html#about">About</a></li>
+                <li><a href="index.html#contact">Contact</a></li>
+            </ul>
+            <div class="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Demo Section -->
+    <section class="hero" style="min-height: auto; padding: 8rem 0 4rem;">
+        <div class="demo-container">
+            <div class="section-header">
+                <h2>Interactive Demo</h2>
+                <p>Experience how natural language commands can manage your entire dispensary operation</p>
+            </div>
+            
+            <!-- System Status -->
+            <div class="system-status">
+                <div class="status-card connected">
+                    <div class="status-icon">
+                        <i class="fas fa-cash-register"></i>
+                    </div>
+                    <h4>Dutchie POS</h4>
+                    <p>Connected & Syncing</p>
+                </div>
+                <div class="status-card connected">
+                    <div class="status-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h4>METRC</h4>
+                    <p>Compliance Active</p>
+                </div>
+                <div class="status-card connected">
+                    <div class="status-icon">
+                        <i class="fas fa-shopping-cart"></i>
+                    </div>
+                    <h4>Jane E-commerce</h4>
+                    <p>Menu Synced</p>
+                </div>
+                <div class="status-card connected">
+                    <div class="status-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <h4>Springbig CRM</h4>
+                    <p>Campaigns Ready</p>
+                </div>
+            </div>
+
+            <!-- Example Commands -->
+            <div class="example-commands">
+                <div class="example-command" onclick="sendExample('Generate my weekly overage report and text VIPs about Friday\'s drop')">
+                    <h4>📊 Generate Reports & Notify Customers</h4>
+                    <p>"Generate my weekly overage report and text VIPs about Friday's drop"</p>
+                </div>
+                <div class="example-command" onclick="sendExample('Check METRC compliance for batch X and schedule inventory recount if needed')">
+                    <h4>🛡️ Compliance Monitoring</h4>
+                    <p>"Check METRC compliance for batch X and schedule inventory recount if needed"</p>
+                </div>
+                <div class="example-command" onclick="sendExample('Update menu prices across all platforms and sync inventory levels')">
+                    <h4>🔄 Multi-Platform Sync</h4>
+                    <p>"Update menu prices across all platforms and sync inventory levels"</p>
+                </div>
+                <div class="example-command" onclick="sendExample('Send delivery confirmation to customer and update METRC tag transfers')">
+                    <h4>🚚 Delivery Management</h4>
+                    <p>"Send delivery confirmation to customer and update METRC tag transfers"</p>
+                </div>
+            </div>
+
+            <!-- Chat Interface -->
+            <div class="chat-interface">
+                <div class="chat-header">
+                    <h3><i class="fas fa-robot"></i> DispensaryAI Assistant</h3>
+                    <p>Ask me anything about your dispensary operations</p>
+                </div>
+                <div class="chat-messages" id="chatMessages">
+                    <div class="message ai">
+                        <div class="message-avatar">
+                            <i class="fas fa-robot"></i>
+                        </div>
+                        <div class="message-content">
+                            Hello! I'm your AI assistant. I can help you manage your dispensary operations across all your software systems. Try asking me to generate reports, check compliance, or manage your inventory.
+                        </div>
+                    </div>
+                </div>
+                <div class="chat-input">
+                    <input type="text" id="chatInput" placeholder="Type your command here..." onkeypress="handleKeyPress(event)">
+                    <button onclick="sendMessage()">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        // Mobile Navigation Toggle
+        const hamburger = document.querySelector('.hamburger');
+        const navMenu = document.querySelector('.nav-menu');
+
+        hamburger.addEventListener('click', () => {
+            hamburger.classList.toggle('active');
+            navMenu.classList.toggle('active');
+        });
+
+        // Chat functionality
+        function sendMessage() {
+            const input = document.getElementById('chatInput');
+            const message = input.value.trim();
+            
+            if (message) {
+                addMessage(message, 'user');
+                input.value = '';
+                
+                // Simulate AI response
+                setTimeout(() => {
+                    generateAIResponse(message);
+                }, 1000);
+            }
+        }
+
+        function sendExample(command) {
+            const input = document.getElementById('chatInput');
+            input.value = command;
+            sendMessage();
+        }
+
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        }
+
+        function addMessage(text, sender) {
+            const chatMessages = document.getElementById('chatMessages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${sender}`;
+            
+            const avatar = document.createElement('div');
+            avatar.className = 'message-avatar';
+            avatar.innerHTML = sender === 'user' ? '<i class="fas fa-user"></i>' : '<i class="fas fa-robot"></i>';
+            
+            const content = document.createElement('div');
+            content.className = 'message-content';
+            content.textContent = text;
+            
+            messageDiv.appendChild(avatar);
+            messageDiv.appendChild(content);
+            chatMessages.appendChild(messageDiv);
+            
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        function generateAIResponse(userMessage) {
+            const responses = {
+                'generate my weekly overage report and text vips about friday\'s drop': 
+                    "I'll generate your weekly overage report and send VIP notifications. Here's what I'm doing:\n\n1. 📊 Pulling sales data from Dutchie POS\n2. 📋 Generating compliance report from METRC\n3. 📱 Creating VIP segment in Springbig CRM\n4. 📧 Drafting promotional message for Friday's drop\n5. 📤 Sending SMS to VIP customers\n\n✅ Report generated and 247 VIP customers notified about Friday's premium drop!",
+                
+                'check metrc compliance for batch x and schedule inventory recount if needed':
+                    "I'm checking METRC compliance for Batch X:\n\n🔍 Current Status:\n• METRC shows: 97g remaining\n• POS shows: 100g remaining\n• Discrepancy: 3g\n\n⚠️ Compliance issue detected! I'm scheduling an inventory recount for tomorrow at 9 AM and will update the corrective CSV upload to METRC.\n\n✅ Inventory recount scheduled and compliance team notified.",
+                
+                'update menu prices across all platforms and sync inventory levels':
+                    "I'm updating menu prices and syncing inventory across all platforms:\n\n🔄 Syncing to:\n• Dutchie E-commerce ✅\n• Jane ✅\n• Meadow ✅\n• Weedmaps ✅\n\n📊 Inventory levels updated in real-time\n💰 Price changes applied across all platforms\n\n✅ All platforms synced successfully! Menu uptime: 99.9%",
+                
+                'send delivery confirmation to customer and update metrc tag transfers':
+                    "I'm processing the delivery confirmation and METRC updates:\n\n📦 Delivery Status:\n• Customer: John Smith\n• Order: #12345\n• Delivery: Confirmed at 2:30 PM\n\n🏷️ METRC Updates:\n• Tag transfers processed\n• Compliance records updated\n• Proof of delivery logged\n\n✅ Delivery confirmed and METRC compliance maintained!"
+            };
+            
+            const lowerMessage = userMessage.toLowerCase();
+            let response = "I understand you want me to help with your dispensary operations. I can assist with:\n\n• Generating reports and customer communications\n• Monitoring compliance and inventory\n• Syncing data across platforms\n• Managing deliveries and METRC updates\n\nTry one of the example commands above to see me in action!";
+            
+            for (const [key, value] of Object.entries(responses)) {
+                if (lowerMessage.includes(key) || key.includes(lowerMessage)) {
+                    response = value;
+                    break;
+                }
+            }
+            
+            addMessage(response, 'ai');
+        }
+
+        // Navbar background change on scroll
+        window.addEventListener('scroll', () => {
+            const navbar = document.querySelector('.navbar');
+            if (window.scrollY > 100) {
+                navbar.style.background = 'rgba(255, 255, 255, 0.98)';
+                navbar.style.boxShadow = '0 2px 20px rgba(0, 0, 0, 0.1)';
+            } else {
+                navbar.style.background = 'rgba(255, 255, 255, 0.95)';
+                navbar.style.boxShadow = 'none';
+            }
+        });
+    </script>
+</body>
+</html> 

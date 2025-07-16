@@ -116,7 +116,7 @@ contactForm.addEventListener('submit', function(e) {
     
     // Simulate API call
     setTimeout(() => {
-        showNotification('Thank you! Your message has been sent successfully. We\'ll get back to you soon.', 'success');
+        showNotification('Thank you! Your demo request has been sent successfully. We\'ll contact you within 24 hours to schedule your personalized dispensary software integration demo.', 'success');
         this.reset();
         submitButton.textContent = originalText;
         submitButton.disabled = false;
