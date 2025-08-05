@@ -467,9 +467,14 @@ body {
 }
 
 .contact-content {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
+    display: flex;
+    justify-content: center;
     gap: 4rem;
+}
+
+.contact-form {
+    max-width: 600px;
+    width: 100%;
 }
 
 .contact-info {
@@ -500,6 +505,8 @@ body {
 }
 
 .contact-form {
+    max-width: 600px;
+    width: 100%;
     background: rgba(255, 255, 255, 0.1);
     padding: 2rem;
     border-radius: 20px;

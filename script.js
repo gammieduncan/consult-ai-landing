@@ -83,6 +83,9 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
+// Initialize EmailJS
+emailjs.init("H8wOv4OkU9HOaQq8b");
+
 // Contact form handling
 const contactForm = document.getElementById('contactForm');
 
@@ -107,20 +110,47 @@ contactForm.addEventListener('submit', function(e) {
         return;
     }
     
-    // Simulate form submission
+    // Send email with EmailJS
     const submitButton = this.querySelector('button[type="submit"]');
     const originalText = submitButton.textContent;
     
     submitButton.textContent = 'Sending...';
     submitButton.disabled = true;
     
-    // Simulate API call
-    setTimeout(() => {
-        showNotification('Thank you! Your demo request has been sent successfully. We\'ll contact you within 24 hours to schedule your personalized dispensary software integration demo.', 'success');
-        this.reset();
-        submitButton.textContent = originalText;
-        submitButton.disabled = false;
-    }, 2000);
+    // Prepare template parameters
+    const formattedMessage = `Demo Request Details:
+
+Name: ${name}
+Email: ${email}
+Company: ${company || 'Not provided'}
+
+Message:
+${message}
+
+---
+This email was sent from the DispensaryAI contact form.`;
+
+    const templateParams = {
+        from_name: name,
+        from_email: email,
+        message: formattedMessage,
+        to_email: 'gammieduncan@gmail.com'
+    };
+    
+    // Send email using EmailJS
+    emailjs.send('service_y679gvh', 'template_lql230w', templateParams)
+        .then(function(response) {
+            showNotification('Thank you! Your demo request has been sent successfully. We\'ll contact you within 24 hours to schedule your personalized dispensary software integration demo.', 'success');
+            contactForm.reset();
+            submitButton.textContent = originalText;
+            submitButton.disabled = false;
+        })
+        .catch(function(error) {
+            console.error('EmailJS error:', error);
+            showNotification('Sorry, there was an error sending your message. Please try again or contact us directly at gammieduncan@gmail.com.', 'error');
+            submitButton.textContent = originalText;
+            submitButton.disabled = false;
+        });
 });
 
 // Email validation
